@@ -11,12 +11,11 @@ class ActivityJokes extends Component {
 		}
 	}
 
-	componentDidMount() {
+	searchActivityJoke(textInput) {
 		axios
-			.get('http://localhost:3000/api/activity-jokes/new/recreational')
+			.get('http://localhost:3000/api/activity-jokes/new/' + textInput.current.value)
 			.then(response => {
 				this.setState({ activity_jokes: response.data, joker: response.data.joker })
-				// console.log(this.state.joker);
 			})
 			.catch(error => {
 				console.log(error)
@@ -25,6 +24,10 @@ class ActivityJokes extends Component {
 	}
 
 	render() {
+		let textInput = React.createRef();
+		let onOnclickHandler = (e) => {
+			this.searchActivityJoke(textInput);
+		};
 		const { activity_jokes, joker, errorMsg } = this.state
 		return (
 			<div>
@@ -37,7 +40,7 @@ class ActivityJokes extends Component {
 						<div className="col">
 							<div className="row">
 								<div className="card text-white bg-success mb-3">
-									<div class="card-header">Activities</div>
+									<div className="card-header">Activities</div>
 									<div className="card-body">
 										<h5 className="card-title">Today we want to</h5>
 										<p className="card-text">{activity_jokes.activity}</p>
@@ -51,10 +54,10 @@ class ActivityJokes extends Component {
 									</div>
 									<div className="row">
 										<div className="col">
-											<input type="text" className="form-control" id="activity_type" placeholder="recreational"/>
+											<input ref={textInput} type="text" className="form-control" id="activity_type" placeholder="recreational"/>
 										</div>
 										<div className="col">
-											<button type="button" className="btn btn-success">Buscar</button>
+											<button onClick={onOnclickHandler} type="button" className="btn btn-success">Buscar</button>
 										</div>
 									</div>
 								</div>
