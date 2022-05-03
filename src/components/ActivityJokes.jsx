@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import { CSVLink } from "react-csv"
+
 class ActivityJokes extends Component {
 	constructor(props) {
 		super(props)
@@ -12,14 +14,40 @@ class ActivityJokes extends Component {
 	}
 
 	searchActivityJoke(textInput) {
-		axios
-			.get('http://localhost:3000/api/activity-jokes/new/' + textInput.current.value)
+		axios.get('http://localhost:3000/api/activity-jokes/new/' + textInput.current.value)
 			.then(response => {
 				this.setState({ activity_jokes: response.data, joker: response.data.joker })
 			})
 			.catch(error => {
 				console.log(error)
 				this.setState({errorMsg: 'Error en la petición'})
+			})
+	}
+
+	downloadhActivityJokes() {
+		const headers = [
+			{ label: "Tipo de actividad", key: "type" },
+			{ label: "Actividad", key: "activity" },
+			{ label: "Key", key: "key" },
+			{ label: "Chiste", key: "joker" }
+		  ];
+
+		axios.get('http://localhost:3000/api/activity-jokes/download')
+			.then(response => {
+				let jokes_array = response.data;
+				console.log(jokes_array);
+				const csvReport = {
+					data: jokes_array,
+					headers: headers,
+					filename: 'Activities_Jokes_Report.csv'
+				};
+				return(
+					<CSVLink {...csvReport}>Export to CSV</CSVLink>
+				)
+			})
+			.catch(error => {
+				console.log(error)
+				this.setState({errorMsg: 'Error en la descarga'})
 			})
 	}
 
@@ -62,7 +90,7 @@ class ActivityJokes extends Component {
 									</div>
 								</div>
 								<div className="col">
-									<button type="button" className="btn btn-warning">Descargar todos</button>
+									<button onClick={this.downloadhActivityJokes} type="button" className="btn btn-warning">Descargar todos</button>
 								</div>
 							</div>
 						</div>
